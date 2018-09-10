@@ -1,13 +1,23 @@
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 
 char operator(void);
 
+int randValue1(int);
+
+int randValue2(int);
+
+void generate_question(void);
+
+void answer_question(void);
+
+void print_response(void);
+
 int main(void) {
     int questions;
+    int value1;
+    int value2;
 
     srand((unsigned int) time(NULL));
 
@@ -45,6 +55,26 @@ char operator(void) {
     }
     printf("Random Operator within operator() function: %c\n", randOperator);
     return randOperator;
+}
 
+int randValue1(int n) {
+
+    return 0; /*to be changed*/
+}
+
+int randValue2(int n) {
+
+    return 0; /*to be changed*/
+}
+
+void generate_question(void) {
+
+}
+
+void answer_question(void) {
+
+}
+
+void print_response(void) {
 
 }

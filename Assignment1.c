@@ -1,11 +1,15 @@
 
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+
 char operator(void);
 
 int main(void) {
     int questions;
 
-    srand(time(NULL));
+    srand((unsigned int) time(NULL));
 
     printf("How many questions would you like to answer? ");
     scanf("%d", &questions);
@@ -20,7 +24,7 @@ int main(void) {
 char operator(void) {
     int randOperatorNum = rand() % 4 + 1;
     char randOperator = 0;
-    printf("Random operator nummber generated is: %d\n", randOperatorNum);
+    printf("Random operator number generated is: %d\n", randOperatorNum);
 
     switch (randOperatorNum) {
         case 1:

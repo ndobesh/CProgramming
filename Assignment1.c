@@ -20,6 +20,9 @@ int main(void) {
 
     srand((unsigned int) time(NULL));
 
+    /*TODO: Validate for non integer values entered
+     * To do that, caputre the return value of scanf */
+
     do {
         printf("How many questions for this test (1 - 20)? ");
         scanf("%d", &questions);
@@ -68,15 +71,65 @@ char operator(void) {
 }
 
 int randValue1(int n) {
-    int value1;
+    int value1 = 0;
+    int modulo = 0;
+    int offset = 1;
 
-    return 0; /*to be changed*/
+    switch (n) {
+        case 1:
+            modulo = 10;
+            break;
+        case 2:
+            modulo = 50;
+            break;
+        case 3:
+            modulo = 100;
+            break;
+        case 4:
+            /*To make the range from -100 to 100, make the max double than expected and subtract 100.
+             * the end result will be 100 to 100 instead of 0 to 200. (value1 = rand() % 200 - 100; */
+            modulo = 200;
+            offset = -100;
+            break;
+        default:
+            printf("ERROR: Something went wrong in randValue1 function");
+    }
+
+    value1 = rand() % modulo + offset;
+
+    return value1;
 }
 
 int randValue2(int n) {
     int value2;
+    int modulo = 0;
+    int offset = 1;
 
-    return 0; /*to be changed*/
+    /*Section of code will repeat if value2 is 0. This will will avoid the divide by 0 case.*/
+    do {
+        switch (n) {
+            case 1:
+                modulo = 10;
+                break;
+            case 2:
+                modulo = 50;
+                break;
+            case 3:
+                modulo = 100;
+                break;
+            case 4:
+                /*To make the range from -100 to 100, make the max double than expected and subtract 100.
+                 * the end result will be 100 to 100 instead of 0 to 200. (value1 = rand() % 200 - 100; */
+                modulo = 200;
+                offset = -100;
+                break;
+            default:
+                printf("ERROR: Something went wrong in randValue1 function");
+        }
+        value2 = rand() % modulo + offset;
+    } while (value2 != 0);
+
+    return value2;
 }
 
 void generate_question(void) {

@@ -1,5 +1,6 @@
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 int randValue1(int);
 
@@ -11,6 +12,8 @@ int answer_question(int);
 
 void print_response(int, int);
 
+void discard_junk(void);
+
 int main(void) {
     int questions;
     int difficulty;
@@ -21,16 +24,19 @@ int main(void) {
 
     srand((unsigned int) time(NULL));
 
-    /*TODO: Validate non-integer values entered*/
     do {
         printf("How many questions for this test (1 - 20)? ");
         n = scanf("%d", &questions);
-    } while (questions < 1 || questions > 20 /*|| n == EOF || n == 0*/);
+        if (n != 1)
+            discard_junk();
+    } while (n != 1 || questions < 1 || questions > 20);
 
     do {
         printf("Select difficulty (1 - 4): ");
         n = scanf("%d", &difficulty);
-    } while (difficulty < 1 || difficulty > 4);
+        if (n != 1)
+            discard_junk();
+    } while (n != 1 || difficulty < 1 || difficulty > 4);
 
     for (int i = 1; i <= questions; i++) {
         resultReturn = generate_question(i, difficulty);
@@ -41,10 +47,6 @@ int main(void) {
     }
 
     printf("Your score was %d/%d\n", tallyCorrect, questions);
-
-    /* DEBUG: make sure the inputted values are within bounds */
-    /*printf("The amount of questions submitted is: %d\n", questions);
-    printf("The difficulty selected is: %d\n", difficulty);*/
 
     return 0;
 }
@@ -200,4 +202,12 @@ void print_response(int n, int rightAnswer) {
     }
 
 
+}
+
+/*Used for cleaning the input buffer when an invalid value is entered
+ * Idea for this validation came from:
+ *https://stackoverflow.com/questions/31633005/validate-the-type-of-input-in-a-do-while-loop-c */
+void discard_junk(void) {
+    char c;
+    while ((c = (char) getchar()) != '\n' && c != EOF);
 }

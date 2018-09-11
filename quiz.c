@@ -1,6 +1,5 @@
-#include <stdlib.h>
+
 #include <stdio.h>
-#include <time.h>
 
 int randValue1(int);
 
@@ -18,18 +17,19 @@ int main(void) {
     int resultReturn;
     int userCorrectReturn;
     int tallyCorrect = 0;
+    int n = 0; /*matching items caught from scan*/
 
     srand((unsigned int) time(NULL));
 
     /*TODO: Validate non-integer values entered*/
     do {
         printf("How many questions for this test (1 - 20)? ");
-        scanf("%d", &questions);
-    } while (questions < 1 || questions > 20);
+        n = scanf("%d", &questions);
+    } while (questions < 1 || questions > 20 /*|| n == EOF || n == 0*/);
 
     do {
         printf("Select difficulty (1 - 4): ");
-        scanf("%d", &difficulty);
+        n = scanf("%d", &difficulty);
     } while (difficulty < 1 || difficulty > 4);
 
     for (int i = 1; i <= questions; i++) {
@@ -182,7 +182,20 @@ void print_response(int n, int rightAnswer) {
                 printf("ERROR: Something went wrong.\n");
         }
     } else {
-        printf("Sorry!\n");
+        int randWrongResponse = rand() % 3 + 1;
+        switch (randWrongResponse) {
+            case 1:
+                printf("Sorry!\n");
+                break;
+            case 2:
+                printf("Not quite!\n");
+                break;
+            case 3:
+                printf("Nope!\n");
+                break;
+            default:
+                printf("ERROR: Something went wrong with wrong response");
+        }
         printf("The correct answer was %d\n", rightAnswer);
     }
 

@@ -2,9 +2,6 @@
 #include <stdio.h>
 #include <time.h>
 
-/*TODO: Confirm I don't need this function anymore*/
-/*char operator(void);*/
-
 int randValue1(int);
 
 int randValue2(int);
@@ -18,12 +15,13 @@ void print_response(int, int);
 int main(void) {
     int questions;
     int difficulty;
+    int resultReturn;
+    int userCorrectReturn;
+    int tallyCorrect = 0;
 
     srand((unsigned int) time(NULL));
 
-    /*TODO: Validate for non integer values entered
-     * To do that, capture the return value of scanf */
-
+    /*TODO: Validate non-integer values entered*/
     do {
         printf("How many questions for this test (1 - 20)? ");
         scanf("%d", &questions);
@@ -34,46 +32,23 @@ int main(void) {
         scanf("%d", &difficulty);
     } while (difficulty < 1 || difficulty > 4);
 
+    int i;
+    for (i = 0; i < questions; i++) {
+        resultReturn = generate_question(questions, difficulty);
+        userCorrectReturn = answer_question(resultReturn);
+        if (userCorrectReturn == 0)
+            tallyCorrect++;
+        print_response(userCorrectReturn, resultReturn);
+    }
+
+    printf("Your score was %d/%d\n", tallyCorrect, questions);
 
     /* DEBUG: make sure the inputted values are within bounds */
-    printf("The amount of questions submitted is: %d\n", questions);
-    printf("The difficulty selected is: %d\n", difficulty);
-
-    /*TODO: Confirm I don't need this function anymore*/
-    /*char Operator1 = operator();
-    printf("Operator returned from function is: %c", Operator1);*/
+    /*printf("The amount of questions submitted is: %d\n", questions);
+    printf("The difficulty selected is: %d\n", difficulty);*/
 
     return 0;
 }
-
-/*TODO: Confirm I don't need this function anymore*/
-/*char operator(void) {
-    int randOperatorNum = rand() % 4 + 1;
-    char randOperator = 0;
-
-    *//*DEBUG: Make sure the rand num is generated properly*//*
-    printf("Random operator number generated is: %d\n", randOperatorNum);
-
-    switch (randOperatorNum) {
-        case 1:
-            randOperator = '+';
-            break;
-        case 2:
-            randOperator = '-';
-            break;
-        case 3:
-            randOperator = '*';
-            break;
-        case 4:
-            randOperator = '/';
-            break;
-        default:
-            "ERROR: Invalid number.";
-
-    }
-    printf("Random Operator within operator() function: %c\n", randOperator);
-    return randOperator;
-}*/
 
 int randValue1(int n) {
     int value1 = 0;
@@ -132,7 +107,7 @@ int randValue2(int diff) {
                 printf("ERROR: Something went wrong in randValue1 function");
         }
         value2 = rand() % modulo + offset;
-    } while (value2 != 0);
+    } while (value2 == 0);
 
     return value2;
 }
@@ -148,19 +123,19 @@ int generate_question(int questions, int difficulty) {
     switch (randOperatorNum) {
         case 1:
             rightAnswer = val1 + val2;
-            printf("Question %d: %d + %d =", questions, val1, val2);
+            printf("Question %d: %d + %d =\n", questions, val1, val2);
             break;
         case 2:
             rightAnswer = val1 - val2;
-            printf("Question %d: %d - %d =", questions, val1, val2);
+            printf("Question %d: %d - %d =\n", questions, val1, val2);
             break;
         case 3:
             rightAnswer = val1 * val2;
-            printf("Question %d: %d * %d =", questions, val1, val2);
+            printf("Question %d: %d * %d =\n", questions, val1, val2);
             break;
         case 4:
             rightAnswer = val1 / val2;
-            printf("Question %d: %d / %d =", questions, val1, val2);
+            printf("Question %d: %d / %d =\n", questions, val1, val2);
             break;
         default:
             printf("ERROR: Something went wrong in generate_question function");
@@ -196,20 +171,20 @@ void print_response(int n, int rightAnswer) {
         int randRightResponse = rand() % 3 + 1;
         switch (randRightResponse) {
             case 1:
-                printf("Nice!");
+                printf("Nice!\n");
                 break;
             case 2:
-                printf("Good job!");
+                printf("Good job!\n");
                 break;
             case 3:
-                printf("You're right!");
+                printf("You're right!\n");
                 break;
             default:
-                printf("ERROR: Something went wrong.");
+                printf("ERROR: Something went wrong.\n");
         }
     } else {
-        printf("Sorry!");
-        printf("The correct answer was %d", rightAnswer);
+        printf("Sorry!\n");
+        printf("The correct answer was %d\n", rightAnswer);
     }
 
 

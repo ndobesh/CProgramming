@@ -32,9 +32,8 @@ int main(void) {
         scanf("%d", &difficulty);
     } while (difficulty < 1 || difficulty > 4);
 
-    int i;
-    for (i = 0; i < questions; i++) {
-        resultReturn = generate_question(questions, difficulty);
+    for (int i = 1; i <= questions; i++) {
+        resultReturn = generate_question(i, difficulty);
         userCorrectReturn = answer_question(resultReturn);
         if (userCorrectReturn == 0)
             tallyCorrect++;

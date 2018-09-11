@@ -150,9 +150,14 @@ int answer_question(int rightAnswer) {
     int generatedAnswer = rightAnswer;
     int userAnswer = 0;
     int userCorrect = 0;
+    int n = 0;
 
-    printf("Enter Answer: ");
-    scanf("%d", &userAnswer);
+    do {
+        printf("Enter Answer: ");
+        n = scanf("%d", &userAnswer);
+        if (n != 1)
+            discard_junk();
+    } while (n != 1);
 
     if (userAnswer == generatedAnswer)
         userCorrect = 0;

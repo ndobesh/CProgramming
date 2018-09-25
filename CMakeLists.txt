@@ -3,4 +3,4 @@ project(CProgramming C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(CProgramming quiz.c)
+add_executable(CProgramming "Homework 2/wordsearch.c")

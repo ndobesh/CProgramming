@@ -164,7 +164,6 @@ int answer_question(int rightAnswer) {
     else
         userCorrect = 1;
 
-
     return userCorrect;
 }
 

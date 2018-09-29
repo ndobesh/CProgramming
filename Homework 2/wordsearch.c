@@ -18,76 +18,58 @@ int main(int argc, char *argv[]) {
     char solution[MAXENTRIES][MAXENTRIES];
 
     if (0 == strcmp(argv[1], "data1")) {
-        FILE *data1 = fopen(argv[1], "r");
-        if (data1 == NULL) {
-            fprintf(stderr, "Failed to open file\n");
-            exit(1);
-        }
         FILE *solution1 = fopen(argv[1], "r");
         if (solution1 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-        for (int i = 0; i < 44; i++) {
-            for (int j = 0; j < 44; j++) {
+        for (int i = 0; i < 45; i++) {
+            for (int j = 0; j < 21; j++) {
                 fscanf(solution1, "%c", &solution[i][j]);
             }
         }
 
         for (int k = 0; k < 44; k++) {
-            for (int i = 0; i < 44; i++) {
+            for (int i = 0; i < 22; i++) {
                 printf("%c", solution[k][i]);
             }
         }
-        fclose(data1);
         fclose(solution1);
     } else if (0 == strcmp(argv[1], "data2")) {
-        /*FILE *data2 = fopen(argv[1], "r");
-        if (data2 == NULL) {
-            fprintf(stderr, "Failed to open file\n");
-            exit(1);
-        }*/
         FILE *solution2 = fopen(argv[1], "r");
         if (solution2 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
         for (int i = 0; i < 35; i++) {
-            for (int j = 0; j < 35; j++) {
+            for (int j = 0; j < 17; j++) {
                 fscanf(solution2, "%c", &solution[i][j]);
             }
         }
 
         for (int k = 0; k < 35; k++) {
-            for (int i = 0; i < 35; i++) {
+            for (int i = 0; i < 17; i++) {
                 printf("%c", solution[k][i]);
             }
         }
-        /*fclose(data2);*/
         fclose(solution2);
     } else if (0 == strcmp(argv[1], "data3")) {
-        FILE *data3 = fopen(argv[1], "r");
-        if (data3 == NULL) {
-            fprintf(stderr, "Failed to open file\n");
-            exit(1);
-        }
         FILE *solution3 = fopen(argv[1], "r");
         if (solution3 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
         for (int i = 0; i < 31; i++) {
-            for (int j = 0; j < 31; j++) {
+            for (int j = 0; j < 15; j++) {
                 fscanf(solution3, "%c", &solution[i][j]);
             }
         }
 
         for (int k = 0; k < 31; k++) {
-            for (int i = 0; i < 31; i++) {
+            for (int i = 0; i < 15; i++) {
                 printf("%c", solution[k][i]);
             }
         }
-        fclose(data3);
         fclose(solution3);
     }
 

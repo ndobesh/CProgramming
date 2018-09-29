@@ -38,7 +38,6 @@ int main(int argc, char *argv[]) {
             for (int i = 0; i < 44; i++) {
                 printf("%c", solution[k][i]);
             }
-            printf("\n");
         }
         fclose(data1);
         fclose(solution1);

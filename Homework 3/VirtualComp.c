@@ -93,14 +93,79 @@ void initialize(int argc, char *argv) {
         if (prog1 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
-        } else if (0 == strcmp(&argv[1], "prog2")) {
-            FILE *prog2 = fopen(&argv[1], "r");
-            if (prog2 == NULL) {
-                fprintf(stderr, "Failed to open file\n");
-                exit(1);
-            }
+        }
+    } else if (0 == strcmp(&argv[1], "prog2")) {
+        FILE *prog2 = fopen(&argv[1], "r");
+        if (prog2 == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "prog3")) {
+        FILE *prog3 = fopen(&argv[1], "r");
+        if (prog3 == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "ce_no_halt")) {
+        FILE *noHalt = fopen(&argv[1], "r");
+        if (noHalt == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "ce_undefined_use")) {
+        FILE *undefinedUse = fopen(&argv[1], "r");
+        if (undefinedUse == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "ce_unknown_command")) {
+        FILE *unknownCommand = fopen(&argv[1], "r");
+        if (unknownCommand == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "ce_word_overflow")) {
+        FILE *wordOverflow = fopen(&argv[1], "r");
+        if (wordOverflow == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "rt_divide_by_zero")) {
+        FILE *divideZero = fopen(&argv[1], "r");
+        if (divideZero == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "ce_no_halt")) {
+        FILE *noHalt = fopen(&argv[1], "r");
+        if (noHalt == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "rt_seg_fault")) {
+        FILE *segFault = fopen(&argv[1], "r");
+        if (segFault == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "rt_unknown_char")) {
+        FILE *unknownChar = fopen(&argv[1], "r");
+        if (unknownChar == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "rt_unknown_command")) {
+        FILE *unknownCommand = fopen(&argv[1], "r");
+        if (unknownCommand == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "rt_word_overflow")) {
+        FILE *wordOverflow = fopen(&argv[1], "r");
+        if (wordOverflow == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
         }
     }
-
 }
 

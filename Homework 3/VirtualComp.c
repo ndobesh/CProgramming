@@ -75,12 +75,25 @@ void execute(void) {
 //TODO: change  void if necessary
 //TODO: Flesh out
 void printMemory(void) {
-    printf("\nREGISTERS:\naccumulator\t\t\t\t%+.4d", structregisters.accumalator);
-    printf("\ninstructionCounter\t\t\t%.2d", structregisters.InstructionCounter);
-    printf("\ninstructionRegister\t\t%+.4d", structregisters.InstructionRegister);
-    printf("\noperationCode\t\t\t\t%.2d", structregisters.OperationCode);
-    printf("\noperand\t\t\t\t\t\t%.2d", structregisters.Operand);
+    printf("\nREGISTERS:\naccumulator\t\t\t\t\t%+.4d", structregisters.accumalator);
+    printf("\ninstructionCounter\t\t\t% .2d", structregisters.InstructionCounter);
+    printf("\ninstructionRegister\t\t\t%+.4d", structregisters.InstructionRegister);
+    printf("\noperationCode\t\t\t\t% .2d", structregisters.OperationCode);
+    printf("\noperand\t\t\t\t\t\t% .2d", structregisters.Operand);
     printf("\nMEMORY:\n");
+    printf("\t\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9\n");
+    int column = 0;
+    for (int j = 0; j <= 9; j++) {
+        printf("\n%d ", column);
+        column += 10;
+
+        if (j == 0s) {
+            printf(" ");
+        }
+        for (int i = 0; i < 9; i++) {
+            printf("%+.4d ", structregisters.memory[i]);
+        }
+    }
 }
 
 //TODO: change  void if necessary

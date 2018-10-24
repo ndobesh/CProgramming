@@ -11,20 +11,20 @@ struct registers {
     int OperationCode; // register that stores the opeation to be done (i.e. READ, BRAN, ADD, etc.)
     int Operand; // register that stores the memory address to be used in instruction.
     int memory[100]; // Array used as memory of VM wich each location having 4 digit integers.
-};
+} structregisters;
 
 //Next 4 structs contain operationCode values.
 struct inputOutput {
     const int READ;
     const int WRIT;
     const int PRNT;
-};
+} structinputOutput;
 
 struct loadStore {
     const int LOAD;
     const int STOR;
     const int SET;
-};
+} structloadStore;
 
 struct arithmetic {
     const int ADD;
@@ -32,14 +32,14 @@ struct arithmetic {
     const int DIV;
     const int MULT;
     const int MOD;
-};
+} structarithmetic;
 
 struct control {
     const int BRAN;
     const int BRNG;
     const int BRZR;
     const int HALT;
-};
+} structcontrol;
 
 
 void compile(void);
@@ -51,7 +51,10 @@ void printMemory(void);
 void initialize(int, char *);
 
 int main(int argc, char *argv[]) {
-    initialize(argc, argv);
+    initialize(argc, *argv);
+    //DEBUG STATEMENT: see if initialization worked
+    //printf("Initialization complete!\n");
+
     compile();
     execute();
     return 0;
@@ -72,7 +75,12 @@ void execute(void) {
 //TODO: change  void if necessary
 //TODO: Flesh out
 void printMemory(void) {
-
+    printf("\nREGISTERS:\naccumulator\t\t\t\t%+.4d", structregisters.accumalator);
+    printf("\ninstructionCounter\t\t\t%.2d", structregisters.InstructionCounter);
+    printf("\ninstructionRegister\t\t%+.4d", structregisters.InstructionRegister);
+    printf("\noperationCode\t\t\t\t%.2d", structregisters.OperationCode);
+    printf("\noperand\t\t\t\t\t\t%.2d", structregisters.Operand);
+    printf("\nMEMORY:\n");
 }
 
 //TODO: change  void if necessary

@@ -73,7 +73,6 @@ void execute(void) {
 }
 
 //TODO: change  void if necessary
-//TODO: Flesh out
 void printMemory(void) {
     printf("\nREGISTERS:\naccumulator\t\t\t\t\t%+.4d", structregisters.accumalator);
     printf("\ninstructionCounter\t\t\t% .2d", structregisters.InstructionCounter);
@@ -81,16 +80,16 @@ void printMemory(void) {
     printf("\noperationCode\t\t\t\t% .2d", structregisters.OperationCode);
     printf("\noperand\t\t\t\t\t\t% .2d", structregisters.Operand);
     printf("\nMEMORY:\n");
-    printf("\t\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9\n");
+    printf("   \t0\t\t1\t  2\t\t3\t  4\t\t 5\t  6\t\t 7\t  8\t\t 9");
     int column = 0;
     for (int j = 0; j <= 9; j++) {
         printf("\n%d ", column);
         column += 10;
 
-        if (j == 0s) {
+        if (j == 0) {
             printf(" ");
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             printf("%+.4d ", structregisters.memory[i]);
         }
     }

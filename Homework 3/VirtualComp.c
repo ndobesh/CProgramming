@@ -54,8 +54,6 @@ struct Files {
     FILE *unknownChar;
     FILE *RTunknownCommand;
     FILE *RTwordOverflow;
-    int whichFile;
-    char *buffer;
 } structfiles;
 
 
@@ -69,19 +67,14 @@ void initialize(int, char *);
 
 void closure(void);
 
-int main(int argc, char *argv[]) {
-    printf("argv: %s\n", argv[1]);
-    char *program = argv[1];
-    printf("program used: %s\n", program);
-    initialize(argc, program);
-    printf("Buffer from file: %s", structfiles.buffer);
-    //DEBUG STATEMENT: see if initialization worked
-    printf("Initialization complete!\n");
-    printf("whichFile: %d", structfiles.whichFile);
+int main(int argc, char **argv) {
+    printf("")
+    initialize(argc, *argv);
+    /*//DEBUG STATEMENT: see if initialization worked
+    printf("Initialization complete!\n");*/
 
     compile();
-    //Temp disabled for debugging purposes.
-    /*execute();*/
+    execute();
 
     closure();
     /*//DEBUG STATEMENT: close FILE(s) that was opened
@@ -103,13 +96,13 @@ void execute(void) {
 
 //Displays the values of each register and memory contents.
 void printMemory(void) {
-    printf("\nREGISTERS:\naccumulator\t\t\t%+.4d", structregisters.accumalator);
+    printf("\nREGISTERS:\naccumulator\t\t\t\t\t%+.4d", structregisters.accumalator);
     printf("\ninstructionCounter\t\t\t% .2d", structregisters.InstructionCounter);
     printf("\ninstructionRegister\t\t\t%+.4d", structregisters.InstructionRegister);
     printf("\noperationCode\t\t\t\t% .2d", structregisters.OperationCode);
-    printf("\noperand\t\t\t\t% .2d", structregisters.Operand);
+    printf("\noperand\t\t\t\t\t\t% .2d", structregisters.Operand);
     printf("\nMEMORY:\n");
-    printf("\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9");
+    printf("   \t0\t\t1\t  2\t\t3\t  4\t\t 5\t  6\t\t 7\t  8\t\t 9");
     int column = 0;
     for (int j = 0; j <= 9; j++) {
         printf("\n%d ", column);
@@ -125,9 +118,9 @@ void printMemory(void) {
 }
 
 //Opens files
-void initialize(int argc, char *program) {
+void initialize(int argc, char *argv) {
     //Assigning values to struct members.
-    struct registers structregisters = {0, 0, 0, 0, 0, {0}};
+    struct registers structregisters = {0, 0, 0, 0, 0, 0, 0};
     struct inputOutput structinputOutput = {10, 11, 12};
     struct loadStore structloadStore = {20, 21, 22};
     struct arithmetic structarithmetic = {30, 31, 32, 33, 34};
@@ -135,136 +128,98 @@ void initialize(int argc, char *program) {
 
     //Open each file to be used in program with "read" permission
     assert(argc > 1);
-    if (0 == strcmp(program, "prog1")) {
-        structfiles.prog1 = fopen(program, "r");
-        structfiles.whichFile = 1;
-        /*fread(structfiles.buffer, 1, 1, structfiles.prog1);*/
+    if (0 == strcmp(&argv[1], "prog1")) {
+        structfiles.prog1 = fopen(&argv[1], "r");
         if (structfiles.prog1 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "prog2")) {
-        structfiles.prog2 = fopen(program, "r");
-        structfiles.whichFile = 2;
+    } else if (0 == strcmp(&argv[1], "prog2")) {
+        structfiles.prog2 = fopen(&argv[1], "r");
         if (structfiles.prog2 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "prog3")) {
-        structfiles.prog3 = fopen(program, "r");
-        structfiles.whichFile = 3;
+    } else if (0 == strcmp(&argv[1], "prog3")) {
+        structfiles.prog3 = fopen(&argv[1], "r");
         if (structfiles.prog3 == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "ce_no_halt")) {
-        structfiles.noHalt = fopen(program, "r");
-        structfiles.whichFile = 4;
+    } else if (0 == strcmp(&argv[1], "ce_no_halt")) {
+        structfiles.noHalt = fopen(&argv[1], "r");
         if (structfiles.noHalt == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "ce_undefined_use")) {
-        structfiles.undefinedUse = fopen(program, "r");
-        structfiles.whichFile = 5;
+    } else if (0 == strcmp(&argv[1], "ce_undefined_use")) {
+        structfiles.undefinedUse = fopen(&argv[1], "r");
         if (structfiles.undefinedUse == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "ce_unknown_command")) {
-        structfiles.CEunknownCommand = fopen(program, "r");
-        structfiles.whichFile = 6;
+    } else if (0 == strcmp(&argv[1], "ce_unknown_command")) {
+        structfiles.CEunknownCommand = fopen(&argv[1], "r");
         if (structfiles.CEunknownCommand == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "ce_word_overflow")) {
-        structfiles.CEwordOverflow = fopen(program, "r");
-        structfiles.whichFile = 7;
+    } else if (0 == strcmp(&argv[1], "ce_word_overflow")) {
+        structfiles.CEwordOverflow = fopen(&argv[1], "r");
         if (structfiles.CEwordOverflow == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "rt_divide_by_zero")) {
-        structfiles.divideZero = fopen(program, "r");
-        structfiles.whichFile = 8;
+    } else if (0 == strcmp(&argv[1], "rt_divide_by_zero")) {
+        structfiles.divideZero = fopen(&argv[1], "r");
         if (structfiles.divideZero == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "rt_seg_fault")) {
-        structfiles.segFault = fopen(program, "r");
-        structfiles.whichFile = 9;
+    } else if (0 == strcmp(&argv[1], "ce_no_halt")) {
+        structfiles.noHalt = fopen(&argv[1], "r");
+        if (structfiles.noHalt == NULL) {
+            fprintf(stderr, "Failed to open file\n");
+            exit(1);
+        }
+    } else if (0 == strcmp(&argv[1], "rt_seg_fault")) {
+        structfiles.segFault = fopen(&argv[1], "r");
         if (structfiles.segFault == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "rt_unknown_char")) {
-        structfiles.unknownChar = fopen(program, "r");
-        structfiles.whichFile = 10;
+    } else if (0 == strcmp(&argv[1], "rt_unknown_char")) {
+        structfiles.unknownChar = fopen(&argv[1], "r");
         if (structfiles.unknownChar == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "rt_unknown_command")) {
-        structfiles.RTunknownCommand = fopen(program, "r");
-        structfiles.whichFile = 11;
+    } else if (0 == strcmp(&argv[1], "rt_unknown_command")) {
+        structfiles.RTunknownCommand = fopen(&argv[1], "r");
         if (structfiles.RTunknownCommand == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else if (0 == strcmp(program, "rt_word_overflow")) {
-        structfiles.RTwordOverflow = fopen(program, "r");
-        structfiles.whichFile = 12;
+    } else if (0 == strcmp(&argv[1], "rt_word_overflow")) {
+        structfiles.RTwordOverflow = fopen(&argv[1], "r");
         if (structfiles.RTwordOverflow == NULL) {
             fprintf(stderr, "Failed to open file\n");
             exit(1);
         }
-    } else
-        exit(1);
-}
-
-void closure(void) {
-    switch (structfiles.whichFile) {
-        case 1:
-            fclose(structfiles.prog1);
-            break;
-        case 2:
-            fclose(structfiles.prog2);
-            break;
-        case 3:
-            fclose(structfiles.prog3);
-            break;
-        case 4:
-            fclose(structfiles.noHalt);
-            break;
-        case 5:
-            fclose(structfiles.undefinedUse);
-            break;
-        case 6:
-            fclose(structfiles.CEunknownCommand);
-            break;
-        case 7:
-            fclose(structfiles.CEwordOverflow);
-            break;
-        case 8:
-            fclose(structfiles.divideZero);
-            break;
-        case 9:
-            fclose(structfiles.segFault);
-            break;
-        case 10:
-            fclose(structfiles.unknownChar);
-            break;
-        case 11:
-            fclose(structfiles.RTunknownCommand);
-            break;
-        case 12:
-            fclose(structfiles.RTwordOverflow);
-            break;
-        default:
-            fprintf(stderr, "Failed to close file");
-            exit(1);
     }
 }
 
+void closure(void) {
+    fclose(structfiles.prog1);
+    fclose(structfiles.prog2);
+    fclose(structfiles.prog3);
+    fclose(structfiles.noHalt);
+    fclose(structfiles.undefinedUse);
+    fclose(structfiles.CEunknownCommand);
+    fclose(structfiles.CEwordOverflow);
+    fclose(structfiles.divideZero);
+    fclose(structfiles.segFault);
+    fclose(structfiles.unknownChar);
+    fclose(structfiles.RTunknownCommand);
+    fclose(structfiles.RTwordOverflow);
+}

@@ -24,7 +24,7 @@ struct loadStore {
     const int LOAD;
     const int STOR;
     const int SET;
-} structloadStore = {20, 21, 22};;
+} structloadStore = {20, 21, 22};
 
 struct arithmetic {
     const int ADD;
@@ -39,7 +39,7 @@ struct control {
     const int BRNG;
     const int BRZR;
     const int HALT;
-} structcontrol = {40, 41, 42, 00};
+} structcontrol = {40, 41, 42, 0};
 
 struct Files {
     FILE *prog1;

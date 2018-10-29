@@ -39,7 +39,7 @@ struct control {
     const int BRNG;
     const int BRZR;
     const int HALT;
-} structcontrol = {40, 41, 42, 99};
+} structcontrol = {40, 41, 42, 00};
 
 struct Files {
     FILE *prog1;
@@ -72,7 +72,6 @@ void closure(void);
 int main(int argc, char *argv[]) {
     char *program = argv[1];
     initialize(argc, program);
-    printf("Buffer from file: %s", structfiles.buffer);
 
     compile();
     execute();
@@ -83,7 +82,7 @@ int main(int argc, char *argv[]) {
 
 void compile(void) {
 
-    char *tempAction = " ";
+    char *tempAction = "HALT";
     int tempActionConv = 0;
 
     switch (structfiles.whichFile) {
@@ -111,37 +110,49 @@ void compile(void) {
 
     if (0 == strcmp(tempAction, "READ")) {
         tempActionConv = structinputOutput.READ;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "WRIT")) {
         tempActionConv = structinputOutput.WRIT;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "PRNT")) {
         tempActionConv = structinputOutput.PRNT;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "LOAD")) {
         tempActionConv = structloadStore.LOAD;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "STOR")) {
         tempActionConv = structloadStore.STOR;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "SET")) {
         tempActionConv = structloadStore.SET;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "ADD")) {
         tempActionConv = structarithmetic.ADD;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "SUB")) {
         tempActionConv = structarithmetic.SUB;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "DIV")) {
         tempActionConv = structarithmetic.DIV;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "MULT")) {
         tempActionConv = structarithmetic.MULT;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "MOD")) {
         tempActionConv = structarithmetic.MOD;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "BRAN")) {
         tempActionConv = structcontrol.BRAN;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "BRNG")) {
         tempActionConv = structcontrol.BRNG;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "BRZR")) {
         tempActionConv = structcontrol.BRZR;
+        structregisters.memory[1] = tempActionConv;
     } else if (0 == strcmp(tempAction, "HALT")) {
         tempActionConv = structcontrol.HALT;
-    } else {
-        fprintf(stderr, "RUNTIME ERROR - Unknown command: Unrecogized command code. Exiting program!\n");
-        exit(1);
+        structregisters.memory[1] = tempActionConv;
     }
 
 }

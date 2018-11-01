@@ -73,8 +73,10 @@ int main(int argc, char *argv[]) {
     char *program = argv[1];
     initialize(argc, program);
 
+    printf("%s\n", structfiles.buffer);
+
     compile();
-    execute();
+    /*execute();*/
 
     closure();
     return 0;
@@ -107,6 +109,16 @@ void compile(void) {
         default:
             break;
     }
+
+    char *token;
+    token = strtok(structfiles.buffer, "\n");
+
+    printf("%s\n", token);
+
+    char *tokenOfToken;
+    tokenOfToken = strtok(token, " ");
+
+    printf("%s\n", tokenOfToken);
 
     if (0 == strcmp(tempAction, "READ")) {
         tempActionConv = structinputOutput.READ;

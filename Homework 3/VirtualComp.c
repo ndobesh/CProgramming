@@ -41,6 +41,7 @@ struct control {
     const int HALT;
 } structcontrol = {40, 41, 42, 0};
 
+//This struct contains the file pointers for each possible file used.
 struct Files {
     FILE *prog1;
     FILE *prog2;
@@ -65,6 +66,8 @@ void execute(void);
 
 void printMemory(void);
 
+int concatenate(int, int);
+
 void initialize(int, char *);
 
 void closure(void);
@@ -73,10 +76,11 @@ int main(int argc, char *argv[]) {
     char *program = argv[1];
     initialize(argc, program);
 
-    printf("%s\n", structfiles.buffer);
+    /*//DEBUG: Make sure file was inputted into buffer from file.
+    printf("%s\n", structfiles.buffer);*/
 
     compile();
-    /*execute();*/
+    execute();
 
     closure();
     return 0;
@@ -84,9 +88,8 @@ int main(int argc, char *argv[]) {
 
 void compile(void) {
 
-    char *tempAction = "HALT";
-    int tempActionConv = 0;
 
+    //Handles all compile time error files
     switch (structfiles.whichFile) {
         case 4:
             fprintf(stderr, "COMPILE ERROR - No HALT: No HALT command is ever given. Exiting program!\n");
@@ -110,61 +113,77 @@ void compile(void) {
             break;
     }
 
+
     char *token;
     token = strtok(structfiles.buffer, "\n");
 
-    printf("%s\n", token);
+    /*printf("%s\n", token);*/
 
-    char *tokenOfToken;
-    tokenOfToken = strtok(token, " ");
+    //Initialize pointer to arbitary value to remove warning.
+    /*char *tokenOfToken = &structfiles.buffer[0];*/
 
-    printf("%s\n", tokenOfToken);
+    while (token != NULL) {
+        char tempMemLoc[3];
+        char tempOperation[4];
+        char tempOperand[3];
 
-    if (0 == strcmp(tempAction, "READ")) {
-        tempActionConv = structinputOutput.READ;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "WRIT")) {
-        tempActionConv = structinputOutput.WRIT;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "PRNT")) {
-        tempActionConv = structinputOutput.PRNT;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "LOAD")) {
-        tempActionConv = structloadStore.LOAD;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "STOR")) {
-        tempActionConv = structloadStore.STOR;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "SET")) {
-        tempActionConv = structloadStore.SET;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "ADD")) {
-        tempActionConv = structarithmetic.ADD;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "SUB")) {
-        tempActionConv = structarithmetic.SUB;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "DIV")) {
-        tempActionConv = structarithmetic.DIV;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "MULT")) {
-        tempActionConv = structarithmetic.MULT;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "MOD")) {
-        tempActionConv = structarithmetic.MOD;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "BRAN")) {
-        tempActionConv = structcontrol.BRAN;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "BRNG")) {
-        tempActionConv = structcontrol.BRNG;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "BRZR")) {
-        tempActionConv = structcontrol.BRZR;
-        structregisters.memory[1] = tempActionConv;
-    } else if (0 == strcmp(tempAction, "HALT")) {
-        tempActionConv = structcontrol.HALT;
-        structregisters.memory[1] = tempActionConv;
+        strcpy(tempMemLoc, strtok(token, " "));
+        strcpy(tempOperation, strtok(NULL, " "));
+        strcpy(tempOperand, strtok(NULL, " "));
+
+        /*printf("tempMemLoc: %c\ntempOperation: %s\ntempOperand: %s\n", tempMemLoc[1], tempOperation, tempOperand);*/
+
+        int memLoc = atoi(tempMemLoc);
+        int operand = atoi(tempOperand);
+        int tempActionConv = 0;
+
+        if (0 == strcmp(tempOperation, "READ")) {
+            tempActionConv = structinputOutput.READ;
+            structregisters.memory[memLoc] = concatenate(tempActionConv, operand);
+        } else if (0 == strcmp(tempOperation, "WRIT")) {
+            tempActionConv = structinputOutput.WRIT;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "PRNT")) {
+            tempActionConv = structinputOutput.PRNT;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "LOAD")) {
+            tempActionConv = structloadStore.LOAD;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "STOR")) {
+            tempActionConv = structloadStore.STOR;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "SET")) {
+            tempActionConv = structloadStore.SET;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "ADD")) {
+            tempActionConv = structarithmetic.ADD;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "SUB")) {
+            tempActionConv = structarithmetic.SUB;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "DIV")) {
+            tempActionConv = structarithmetic.DIV;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "MULT")) {
+            tempActionConv = structarithmetic.MULT;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "MOD")) {
+            tempActionConv = structarithmetic.MOD;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "BRAN")) {
+            tempActionConv = structcontrol.BRAN;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "BRNG")) {
+            tempActionConv = structcontrol.BRNG;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "BRZR")) {
+            tempActionConv = structcontrol.BRZR;
+            structregisters.memory[memLoc] = tempActionConv;
+        } else if (0 == strcmp(tempOperation, "HALT")) {
+            tempActionConv = structcontrol.HALT;
+            structregisters.memory[memLoc] = tempActionConv;
+        }
+        token = strtok(NULL, "\n");
     }
 
 }
@@ -208,20 +227,25 @@ void printMemory(void) {
     printf("\noperationCode\t\t\t\t% .2d", structregisters.OperationCode);
     printf("\noperand\t\t\t\t% .2d", structregisters.Operand);
     printf("\nMEMORY:\n");
-    printf("\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9");
-    int column = 0;
-    for (int j = 0; j <= 9; j++) {
-        printf("\n%d ", column);
-        column += 10;
+    printf("%8d%6d%6d%6d%6d%6d%6d%6d%6d%6d", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-        if (j == 0) {
-            printf(" ");
-        }
-        for (int i = 0; i < 9; i++) {
-            printf("%+.4d ", structregisters.memory[i]);
+    for (int i = 0; i < 100; i += 10) {
+        printf("\n%d", i);
+        for (int j = 0; j < 10; j++) {
+            printf(" %+.4d", structregisters.memory[j + i]);
         }
     }
     printf("\n");
+}
+
+//Function will take to int values and concatenate this together.
+//E.X. x = 12 y = 34 -> z =1234
+//Source: https://stackoverflow.com/questions/12700497/how-to-concatenate-two-integers-in-c
+int concatenate(int x, int y) {
+    int pow = 10;
+    while (y >= pow)
+        pow *= 10;
+    return x * pow + y;
 }
 
 //Opens required files for program

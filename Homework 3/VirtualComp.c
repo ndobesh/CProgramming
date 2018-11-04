@@ -76,9 +76,6 @@ int main(int argc, char *argv[]) {
     char *program = argv[1];
     initialize(argc, program);
 
-    /*//DEBUG: Make sure file was inputted into buffer from file.
-    printf("%s\n", structfiles.buffer);*/
-
     compile();
     execute();
 
@@ -114,13 +111,7 @@ void compile(void) {
     }
 
 
-    char *token;
-    token = strtok(structfiles.buffer, "\n");
-
-    /*printf("%s\n", token);*/
-
-    //Initialize pointer to arbitary value to remove warning.
-    /*char *tokenOfToken = &structfiles.buffer[0];*/
+    char *token = strtok(structfiles.buffer, "\n");
 
     while (token != NULL) {
         char tempMemLoc[3];

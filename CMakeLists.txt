@@ -3,4 +3,4 @@ project(CProgramming C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(CProgramming "Homework 4/WordFormat.c")
+add_executable(CProgramming "Homework 4/WordFormat.c" "Homework 4/WordFormat.c")

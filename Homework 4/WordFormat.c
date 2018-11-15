@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
     //Imported from dot.h file
     char s[60];
-    const char *w[60];
+    /*const char *w[60];*/
     char wurd[60];
     char c;
     int i;
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     }
 
     /*quick sorts the list of words in ascending order*/
-    qsort(wl, i - 1, sizeof(char *), cmpfunc);
+    qsort(wl, (size_t) (i - 1), sizeof(char *), cmpfunc);
 
     /*prints all the words to count words file in alphabetical order*/
     k = 1;

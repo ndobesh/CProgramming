@@ -1,5 +1,3 @@
-/* A simple server in the internet domain using TCP
-   The port number is passed as an argument */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,18 +6,36 @@
 #include <netinet/in.h>
 #include "util.h"
 
-int main(int argc, char *argv[]) {
+#define PORT_NUM 25001
+
+typedef struct student {
+    char lname[10];
+    char initial;
+    char fname[10];
+    unsigned long SID;
+    float GPA;
+} SREC;
+
+typedef struct node {
+    int data; /*Or whatever data you need to orginize*/
+    struct node *next;
+} Node;
+
+void linked_insert(Node **nodePtr, int value);
+
+int linked_delete(Node **nodePtr, int value);
+
+int linked_isEmpty(Node *nodePtr);
+
+void linked_print(Node *nodePtr);
+
+int main(void) {
     int sockfd, newsockfd, portno;
     socklen_t clilen;
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
 
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-        exit(1);
-    }
-
-    portno = atoi(argv[1]);
+    portno = PORT_NUM;
 
     /*
      * STEP 1 Create the socket.
@@ -81,5 +97,99 @@ int main(int argc, char *argv[]) {
 
         /* Send the message field */
         writen(newsockfd, response, (size_t) length);
+    }
+}
+
+void linked_insert(Node **nodePtr, int value) {
+    Node *newNode;
+    Node *previous;
+    Node *current;
+
+    newNode = (Node *) malloc(sizeof(Node));
+
+    if (newNode != NULL) /*make sure memory was available*/
+    {
+        newNode->data = value;
+        newNode->next = NULL;
+
+        previous = NULL;
+        current = *nodePtr;
+
+        /*Traverses list until end or larger data is found
+          If order doesn't matter, only append to the end
+          by removing second condition or insert at the beginning
+        in constant time*/
+        while (current != NULL && value > current->data) {
+            previous = current;
+            current = current->next;
+        }
+
+        if (previous == NULL) /*newNode is placed at the beginning*/
+        {
+            newNode->next = *nodePtr;
+            *nodePtr = newNode;
+        } else /*newNode is placed in middle or end*/
+        {
+            previous->next = newNode;
+            newNode->next = current;
+        }
+    } else {
+        printf("%d not inserted\n", value);
+    }
+}
+
+int linked_delete(Node **nodePtr, int value) {
+    Node *previous;
+    Node *current;
+    Node *temp;
+
+    /*First node is to be deleted*/
+    if (value == (*nodePtr)->data) {
+        temp = *nodePtr; /*retain pointer to memory to be freed*/
+        *nodePtr = (*nodePtr)->next;
+        free(temp);
+        return value;
+    } else {
+        /*Must retain the previous to connect it
+          to the node after the one that is
+          going to be deleted*/
+        previous = *nodePtr;
+        current = (*nodePtr)->next; /*parens needed to force correct order of ops*/
+
+        /*loop through nodes until the value is found*/
+        while (current != NULL && current->data != value) {
+            previous = current;
+            current = current->next;
+        }
+
+        /*delete current node if not NULL
+          if node is NULL then the value
+          was not in list*/
+        if (current != NULL) {
+            previous->next = current->next;
+            free(current);
+            return value;
+        }
+    }
+    /*value not found, return -1 to show
+      no node removed*/
+    return -1;
+
+}
+
+int linked_isEmpty(Node *nodePtr) {
+    return nodePtr == NULL;
+}
+
+void linked_print(Node *nodePtr) {
+    if (linked_isEmpty(nodePtr)) {
+        printf("List is empty\n");
+    } else {
+        while (nodePtr != NULL) {
+            printf("%d --> ", nodePtr->data);
+            nodePtr = nodePtr->next;
+        }
+
+        printf("NULL\n");
     }
 }

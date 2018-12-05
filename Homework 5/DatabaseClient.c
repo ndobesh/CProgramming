@@ -1,5 +1,3 @@
-/* A simple client in the internet domain using TCP
-   The hostname and port number is passed as arguments*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -9,18 +7,16 @@
 #include <netdb.h>
 #include "util.h"
 
-int main(int argc, char *argv[]) {
+#define PORT_NUM 25001
+
+int main(void) {
     int sockfd, portno;
     struct sockaddr_in serv_addr;
     struct hostent *server;
     char buffer[256];
 
-    if (argc < 3) {
-        fprintf(stderr, "Usage: %s hostname port\n", argv[0]);
-        exit(1);
-    }
 
-    portno = atoi(argv[2]);
+    portno = PORT_NUM;
 
     /*
      * Step 1 Create socket.
@@ -31,7 +27,7 @@ int main(int argc, char *argv[]) {
         error("ERROR opening socket");
 
     /* gethostbyname() takes host domain name and resolves it to an address */
-    server = gethostbyname(argv[1]);
+    server = gethostbyname("localhost");
 
     if (server == NULL) {
         fprintf(stderr, "ERROR, no such host\n");

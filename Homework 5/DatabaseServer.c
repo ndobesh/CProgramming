@@ -1,9 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include "util.h"
 
 #define PORT_NUM 25001
@@ -21,6 +15,13 @@ typedef struct node {
     struct node *next;
 } Node;
 
+//Struct will hold varibales to be used through program
+//TODO: Delete struct if only one variable exist in struct
+typedef struct util {
+    int command;
+    char *response;
+} Util;
+
 void linked_insert(Node **nodePtr, int value);
 
 int linked_delete(Node **nodePtr, int value);
@@ -29,11 +30,19 @@ int linked_isEmpty(Node *nodePtr);
 
 void linked_print(Node *nodePtr);
 
+void process(char buffer[256]);
+
+void validate(char *buffer);
+
+struct util utilVariables;
+struct student studentRecord;
+
 int main(void) {
     int sockfd, newsockfd, portno;
     socklen_t clilen;
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
+
 
     portno = PORT_NUM;
 
@@ -77,7 +86,7 @@ int main(void) {
 
     for (;;) {
         int length;
-        char *response = "I got your message";
+        utilVariables.response = "I got your message";
 
         /* Read the length field */
         length = (int) read_length(newsockfd);
@@ -89,15 +98,85 @@ int main(void) {
         readn(newsockfd, buffer, (size_t) length);
         buffer[length] = '\0';
 
+        process(buffer);
+
         printf("Received message from the client: %s", buffer);
 
         /* Send the length field */
-        length = (int) strlen(response);
+        length = (int) strlen(utilVariables.response);
         write_length(newsockfd, (size_t) length);
 
         /* Send the message field */
-        writen(newsockfd, response, (size_t) length);
+        writen(newsockfd, utilVariables.response, (size_t) length);
     }
+}
+
+//TODO: Validate input
+//Function processes data sent from client
+void process(char buffer[256]) {
+    char *commandFromBuffer;
+    FILE *file;
+    char s[60]; //buffer for files
+
+    //pointer to properly indented output
+    sprintf(s, "records.out");
+    if ((file = fopen(s, "w+")) == NULL) {
+        fprintf(stderr, "Failed to open file\n");
+        exit(1);
+    }
+
+    validate(buffer);
+    //TODO: Create case statement based on first word of buffer
+    commandFromBuffer = strtok(buffer, " ");
+    strlwr(commandFromBuffer);
+    if (strcmp(commandFromBuffer, "get") == 0) {
+        //TODO: Do something
+        char *sortBy = strlwr(strtok(NULL, " "));
+        //if/else statement for all get combinations
+        if (strcmp(sortBy, "lname") == 0) {
+            //TODO:Return database sorted by last name
+        } else if (strcmp(sortBy, "fname") == 0) {
+            //TODO: Return database sorted by first name
+        } else if (strcmp(sortBy, "sid") == 0) {
+            //TODO: Return database sorted by SID
+        } else if (strcmp(sortBy, "gpa") == 0) {
+            //TODO: Return databasee sorted by GPA
+        } else {
+            fprintf(stderr, "Error! Usage: get {lname, fname, SID, GPA}");
+            exit(3);
+        }
+    } else if (strcmp(commandFromBuffer, "put") == 0) {
+        //TODO:Assign tokens from put statement into struct
+        /*studentRecord.fname = strtok(NULL, ",");
+        studentRecord.lname = strtok(NULL, ",");
+        studentRecord.initial = strtok(NULL, ",");
+        studentRecord.SID = strtok(NULL, ",");
+        studentRecord.GPA = strtok(NULL, ",");*/
+    } else if (strcmp(commandFromBuffer, "delete") == 0) {
+        //TODO: Delete struct student Record based off of SID
+        /*int SID = atoi(strtok(NULL," "));
+        linked_delete(studentRecord, SID);*/
+    }
+        //The server saves data to the file and the client exits.
+    else if (strcmp(commandFromBuffer, "save") == 0) {
+        //TODO: Output to file.
+        //HINT: Use code from A4
+        /*linked_print(*//*datarecords*//*);*/
+        exit(4);
+    } else {
+        //Handles error if one of the commands isn't entered.
+        //Should not be hit because of the validate function.
+        fprintf(stderr, "Invalid command! First word must be either get, put, delete, or save\n");
+        exit(2);
+    }
+    fclose(file);
+}
+
+//Function validates input from client
+//TODO: Validate buffer
+//May not need this function...
+void validate(char *buffer) {
+
 }
 
 void linked_insert(Node **nodePtr, int value) {

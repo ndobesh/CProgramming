@@ -15,12 +15,6 @@ typedef struct node {
     struct node *next;
 } Node;
 
-//Struct will hold varibales to be used through program
-//TODO: Delete struct if only one variable exist in struct
-typedef struct util {
-    int command;
-    char *response;
-} Util;
 
 void linked_insert(Node **nodePtr, int value);
 
@@ -34,8 +28,7 @@ void process(char buffer[256]);
 
 void validate(char *buffer);
 
-struct util utilVariables;
-struct student studentRecord;
+SREC studentRecord;
 
 int main(void) {
     int sockfd, newsockfd, portno;
@@ -86,7 +79,7 @@ int main(void) {
 
     for (;;) {
         int length;
-        utilVariables.response = "I got your message";
+        char *response = "I got your message";
 
         /* Read the length field */
         length = (int) read_length(newsockfd);
@@ -103,11 +96,11 @@ int main(void) {
         printf("Received message from the client: %s", buffer);
 
         /* Send the length field */
-        length = (int) strlen(utilVariables.response);
+        length = (int) strlen(response);
         write_length(newsockfd, (size_t) length);
 
         /* Send the message field */
-        writen(newsockfd, utilVariables.response, (size_t) length);
+        writen(newsockfd, response, (size_t) length);
     }
 }
 
@@ -125,13 +118,18 @@ void process(char buffer[256]) {
         exit(1);
     }
 
-    validate(buffer);
     //TODO: Create case statement based on first word of buffer
     commandFromBuffer = strtok(buffer, " ");
-    strlwr(commandFromBuffer);
+    for (int i = 0; commandFromBuffer[i]; i++) {
+        commandFromBuffer[i] = tolower(commandFromBuffer[i]);
+    }
+    /*strlwr(commandFromBuffer);*/
     if (strcmp(commandFromBuffer, "get") == 0) {
         //TODO: Do something
-        char *sortBy = strlwr(strtok(NULL, " "));
+        char *sortBy = strtok(NULL, " ");
+        for (int i = 0; sortBy[i]; i++) {
+            sortBy[i] = tolower(sortBy[i]);
+        }
         //if/else statement for all get combinations
         if (strcmp(sortBy, "lname") == 0) {
             //TODO:Return database sorted by last name
@@ -147,10 +145,15 @@ void process(char buffer[256]) {
         }
     } else if (strcmp(commandFromBuffer, "put") == 0) {
         //TODO:Assign tokens from put statement into struct
-        /*studentRecord.fname = strtok(NULL, ",");
-        studentRecord.lname = strtok(NULL, ",");
-        studentRecord.initial = strtok(NULL, ",");
-        studentRecord.SID = strtok(NULL, ",");
+        //Something tells me this isn't going to work...
+        /*char templname[10] = " ";
+        char tempfname[10] = " ";
+        tempfname[0] = *strtok(NULL, ",");
+        *studentRecord.fname = (char) tempfname;
+        templname[0] = *strtok(NULL, ",");
+        *studentRecord.lname = (char) templname;*/
+        /*studentRecord.initial = (char) strtok(NULL, ",");
+        studentRecord.SID = (unsigned long) strtok(NULL, ",");
         studentRecord.GPA = strtok(NULL, ",");*/
     } else if (strcmp(commandFromBuffer, "delete") == 0) {
         //TODO: Delete struct student Record based off of SID
@@ -172,12 +175,6 @@ void process(char buffer[256]) {
     fclose(file);
 }
 
-//Function validates input from client
-//TODO: Validate buffer
-//May not need this function...
-void validate(char *buffer) {
-
-}
 
 void linked_insert(Node **nodePtr, int value) {
     Node *newNode;

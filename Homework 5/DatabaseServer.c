@@ -109,8 +109,10 @@ int main(void) {
 //Function processes data sent from client
 char *process(char buff[], int size) {
     char *commandFromBuffer;
+    char *response = "Default Message";
     FILE *file;
     char s[60]; //buffer for files
+
 
     //pointer to properly indented output
     sprintf(s, "records.out");

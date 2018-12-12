@@ -24,7 +24,7 @@ int linked_isEmpty(Node *nodePtr);
 
 void linked_print(Node *nodePtr);
 
-void process(char buffer[256]);
+char *process(char[], int);
 
 void validate(char *buffer);
 
@@ -35,6 +35,7 @@ int main(void) {
     socklen_t clilen;
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
+    int size = sizeof(buffer) / sizeof(buffer[0]);
 
 
     portno = PORT_NUM;
@@ -91,7 +92,7 @@ int main(void) {
         readn(newsockfd, buffer, (size_t) length);
         buffer[length] = '\0';
 
-        process(buffer);
+        response = process(buffer, size);
 
         printf("Received message from the client: %s", buffer);
 
@@ -106,7 +107,7 @@ int main(void) {
 
 //TODO: Validate input
 //Function processes data sent from client
-void process(char buffer[256]) {
+char *process(char buff[], int size) {
     char *commandFromBuffer;
     FILE *file;
     char s[60]; //buffer for files
@@ -119,7 +120,7 @@ void process(char buffer[256]) {
     }
 
     //TODO: Create case statement based on first word of buffer
-    commandFromBuffer = strtok(buffer, " ");
+    commandFromBuffer = strtok(buff, " ");
     for (int i = 0; commandFromBuffer[i]; i++) {
         commandFromBuffer[i] = tolower(commandFromBuffer[i]);
     }
@@ -133,18 +134,23 @@ void process(char buffer[256]) {
         //if/else statement for all get combinations
         if (strcmp(sortBy, "lname") == 0) {
             //TODO:Return database sorted by last name
+            printf("Second token is lname\n");
         } else if (strcmp(sortBy, "fname") == 0) {
             //TODO: Return database sorted by first name
+            printf("Second token is fname\n");
         } else if (strcmp(sortBy, "sid") == 0) {
             //TODO: Return database sorted by SID
+            printf("Second token is sid\n");
         } else if (strcmp(sortBy, "gpa") == 0) {
             //TODO: Return databasee sorted by GPA
+            printf("Second token is gpa\n");
         } else {
             fprintf(stderr, "Error! Usage: get {lname, fname, SID, GPA}");
             exit(3);
         }
     } else if (strcmp(commandFromBuffer, "put") == 0) {
         //TODO:Assign tokens from put statement into struct
+        printf("Command entered was %s\n", commandFromBuffer);
         //Something tells me this isn't going to work...
         /*char templname[10] = " ";
         char tempfname[10] = " ";
@@ -157,12 +163,14 @@ void process(char buffer[256]) {
         studentRecord.GPA = strtok(NULL, ",");*/
     } else if (strcmp(commandFromBuffer, "delete") == 0) {
         //TODO: Delete struct student Record based off of SID
+        printf("Command entered was %s\n", commandFromBuffer);
         /*int SID = atoi(strtok(NULL," "));
         linked_delete(studentRecord, SID);*/
     }
         //The server saves data to the file and the client exits.
     else if (strcmp(commandFromBuffer, "save") == 0) {
         //TODO: Output to file.
+        printf("Command entered was %s\n", commandFromBuffer);
         //HINT: Use code from A4
         /*linked_print(*//*datarecords*//*);*/
         exit(4);
@@ -173,6 +181,7 @@ void process(char buffer[256]) {
         exit(2);
     }
     fclose(file);
+    return response;
 }
 
 

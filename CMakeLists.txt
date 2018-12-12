@@ -11,4 +11,4 @@ set(SOURCE_FILES
 
 include_directories(.)
 
-add_executable(CProgramming "Homework 5/DatabaseServer.c" "Homework 5/DatabaseClient.c")
+add_executable(CProgramming "Homework 5/DatabaseServer.c" "Homework 5/DatabaseClient.c" Test/ResponeTest.c)

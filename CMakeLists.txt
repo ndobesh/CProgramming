@@ -4,11 +4,13 @@ project(CProgramming C)
 set(CMAKE_C_STANDARD 99)
 
 set(SOURCE_FILES
-        DatabaseClient.c
-        DatabaseServer.c
-        util.c
-        util.h)
+        "DatabaseClient.c"
+        "DatabaseServer.c"
+        "util.c"
+        "util.h")
 
-include_directories(.)
+include_directories(Homework 5)
 
-add_executable(CProgramming "Homework 5/DatabaseServer.c" "Homework 5/DatabaseClient.c" Test/ResponeTest.c)
+add_executable(Server "Homework 5/DatabaseServer.c")
+add_executable(Client "Homework 5/DatabaseClient.c")
+add_executable(Test "Test/ResponeTest.c")

@@ -6,7 +6,7 @@
 char *process(char[], int);
 
 int main(void) {
-    char buffer[256] = "GET LNAME";
+    char buffer[256] = "GET SID";
     char *response = "I got your message";
     int size = sizeof(buffer) / sizeof(buffer[0]);
 

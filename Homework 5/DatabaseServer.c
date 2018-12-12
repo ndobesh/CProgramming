@@ -33,24 +33,24 @@ SREC studentRecord;
 int main(void) {
     int sockfd, newsockfd, portno;
     socklen_t clilen;
-    char buffer[256];
+    char buffer[256] = "GET SID";
     struct sockaddr_in serv_addr, cli_addr;
     int size = sizeof(buffer) / sizeof(buffer[0]);
 
 
     portno = PORT_NUM;
 
-    /*
-     * STEP 1 Create the socket.
-     */
+
+    /* STEP 1 Create the socket.*/
+
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sockfd < 0)
         error("Error opening socket");
 
-    /*
-     * STEP 2 Prepare and bind to the server address.
-     */
+
+    /* STEP 2 Prepare and bind to the server address.*/
+
     memset((char *) &serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -59,30 +59,30 @@ int main(void) {
     if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         error("Error binding socket");
 
-    /*
-     * STEP 3 Open server up for listening.
-     */
+
+    /* STEP 3 Open server up for listening.*/
+
     if (listen(sockfd, 5) < 0)
         error("Error listening on socket");
 
-    /*
-     * STEP 4 Accept incoming connections.
-     */
+
+    /* STEP 4 Accept incoming connections.*/
+
     clilen = sizeof(cli_addr);
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
     if (newsockfd < 0)
         error("Error accepting connection");
 
-    /*
-     * Communicate with the client.
-     */
+
+    /* Communicate with the client.*/
+
     memset(buffer, 0, 256);
 
     for (;;) {
         int length;
         char *response = "I got your message";
 
-        /* Read the length field */
+        /*Read the length field */
         length = (int) read_length(newsockfd);
 
         if (length >= sizeof(buffer))
@@ -92,15 +92,16 @@ int main(void) {
         readn(newsockfd, buffer, (size_t) length);
         buffer[length] = '\0';
 
+        /* printf("Buffer contents: %s\n", buffer);*/
         response = process(buffer, size);
 
         printf("Received message from the client: %s", buffer);
 
-        /* Send the length field */
+        /*Send the length field */
         length = (int) strlen(response);
         write_length(newsockfd, (size_t) length);
 
-        /* Send the message field */
+        /*Send the message field*/
         writen(newsockfd, response, (size_t) length);
     }
 }
@@ -108,7 +109,8 @@ int main(void) {
 //TODO: Validate input
 //Function processes data sent from client
 char *process(char buff[], int size) {
-    char *commandFromBuffer;
+    char *bufferFromArg = buff;
+    char *commandFromBuffer = strtok(bufferFromArg, " ");
     char *response = "Default Message";
     FILE *file;
     char s[60]; //buffer for files
@@ -122,17 +124,18 @@ char *process(char buff[], int size) {
     }
 
     //TODO: Create case statement based on first word of buffer
-    commandFromBuffer = strtok(buff, " ");
+    /*commandFromBuffer = strtok(buff, " ");*/
     for (int i = 0; commandFromBuffer[i]; i++) {
         commandFromBuffer[i] = tolower(commandFromBuffer[i]);
     }
-    /*strlwr(commandFromBuffer);*/
     if (strcmp(commandFromBuffer, "get") == 0) {
         //TODO: Do something
         char *sortBy = strtok(NULL, " ");
+        /*printf("sortBy before changing to lowercase: %s\n", sortBy);*/
         for (int i = 0; sortBy[i]; i++) {
             sortBy[i] = tolower(sortBy[i]);
         }
+        /*printf("sortBy after changing to lowercase: %s\n",sortBy);*/
         //if/else statement for all get combinations
         if (strcmp(sortBy, "lname") == 0) {
             //TODO:Return database sorted by last name
@@ -147,7 +150,7 @@ char *process(char buff[], int size) {
             //TODO: Return databasee sorted by GPA
             printf("Second token is gpa\n");
         } else {
-            fprintf(stderr, "Error! Usage: get {lname, fname, SID, GPA}");
+            fprintf(stderr, "Error! Usage: get {lname, fname, SID, GPA}\n");
             exit(3);
         }
     } else if (strcmp(commandFromBuffer, "put") == 0) {

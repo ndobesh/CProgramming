@@ -8,6 +8,7 @@ typedef struct student {
     char fname[10];
     unsigned long SID;
     float GPA;
+    struct student *next;
 } SREC;
 
 typedef struct node {

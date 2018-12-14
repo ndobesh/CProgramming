@@ -20,11 +20,9 @@ typedef struct student {
 
 typedef struct node {
     struct node *next;
-    SREC *data; /*SREC*/
+    SREC *data;
 } Node;
 
-/* --- Function Prototypes --- */
-/* IO */
 int
 putRecord(Node *f, Node *l, Node *s, Node *g, const char *cmd, const char *s_gpa, const char *s_sid, const char *first,
           const char *init, const char *last);
@@ -33,18 +31,11 @@ int saveNodes(FILE *fp, Node *start);
 
 void sendRecords(Node *start, int numberOfRecords, int handle);
 
-void readRecords(FILE *fp, Node *first, Node *last, Node *SID, Node *GPA, int *numRec);
-
 void error(char *msg);
 
-/* Nodes */
 Node *createNode();
 
 Node *deleteNode(Node *, unsigned long, int *);
-
-Node *insertAtFront(Node *front, SREC *record);
-
-void printNodes(Node *start);
 
 void add(Node *node, SREC *rec);
 
@@ -70,27 +61,26 @@ int getCommand(char *cmd);
 
 SREC *newSREC(const char *last, char init, const char *first, unsigned long SID, float GPA);
 
-/* --- Global Static Variables --- */
-/* I had to modify some of these from the ones given since some were over the 30 char limit */
-static const char *successfulPutResponse = "Record successfully added.";
-static const char *unsuccessfulPutResponse = "Error while adding record.";
-static const char *unsuccessfulStopResponse = "Error while saving database.";
-static const char *successfulSaveResponse = "Database saved successfully.";
-static const char *successfulDeleteResponse = "Record deleted.";
-static const char *unsuccessfulDeleteResponse = "Unable to delete record.";
+char *successfulPutResponse = "Record successfully added.";
+char *unsuccessfulPutResponse = "Error while adding record.";
+char *unsuccessfulSaveResponse = "Error while saving database.";
+char *successfulSaveResponse = "Database saved successfully.";
+char *successfulDeleteResponse = "Record deleted.";
+char *unsuccessfulDeleteResponse = "Unable to delete record.";
 
 int main(void) {
-    int sockfd, newsockfd, portno;
+    int sockfd;
+    int newsockfd;
+    int portno;
     socklen_t clilen;
     char buffer[256];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
 
     int numRecords = 0;
-    int commandID = -1;
+    int commandID;
     unsigned long tempSID;
 
-    /*Linked list node heads for the 4 different sorting types */
     Node *fNameHead = NULL;
     Node *lNameHead = NULL;
     Node *SIDHead = NULL;
@@ -121,13 +111,10 @@ int main(void) {
         error("ERROR on accept");
     }
 
-    /* Init Nodes */
     fNameHead = createNode();
     lNameHead = createNode();
     SIDHead = createNode();
     GPAHead = createNode();
-
-    /* Main Loop */
 
     for (;;) {
         memset(buffer, 0, 256);
@@ -138,8 +125,8 @@ int main(void) {
 
         commandID = getCommand(strtok(buffer, " "));
 
-        if (commandID == 0) { /*Get command */
-            n = getTypeID(strtok(NULL, " ")); /*Reuse n */
+        if (commandID == 0) {
+            n = getTypeID(strtok(NULL, " "));
             if (n == 0) {
                 sendRecords(fNameHead, numRecords, newsockfd);
             } else if (n == 1) {
@@ -149,7 +136,7 @@ int main(void) {
             } else if (n == 3) {
                 sendRecords(GPAHead, numRecords, newsockfd);
             } else {
-                sendRecords(NULL, 0, newsockfd); /*No records in that cat...*/
+                sendRecords(NULL, 0, newsockfd);
             }
         }
 
@@ -157,7 +144,6 @@ int main(void) {
             if (putRecord(fNameHead, lNameHead, SIDHead, GPAHead,
                           strtok(buffer, ","), strtok(NULL, ","), strtok(NULL, ","),
                           strtok(NULL, ","), strtok(NULL, ","), strtok(NULL, ",")) == 1) {
-                /*Success!*/
                 numRecords++;
                 sortAll(fNameHead, lNameHead, SIDHead, GPAHead);
                 write(newsockfd, successfulPutResponse, strlen(successfulPutResponse));
@@ -167,14 +153,14 @@ int main(void) {
         }
 
         if (commandID == 2) { /*delete*/
-            tempSID = getSID(strtok(NULL, " ")); /*SID, already toked it to get CommandID*/
+            tempSID = getSID(strtok(NULL, " "));
 
             fNameHead = deleteNode(fNameHead, tempSID, &n);
             lNameHead = deleteNode(lNameHead, tempSID, &n);
             SIDHead = deleteNode(SIDHead, tempSID, &n);
             GPAHead = deleteNode(GPAHead, tempSID, &n);
 
-            if (n == 0) { /*Failed*/
+            if (n == 0) {
                 write(newsockfd, unsuccessfulDeleteResponse, strlen(unsuccessfulDeleteResponse));
             } else {
                 numRecords--;
@@ -191,7 +177,7 @@ int main(void) {
     dataFile = fopen(FILE_NAME, "w");
     if (dataFile == NULL) {
         fprintf(stderr, "Unable to data file.\n");
-        write(newsockfd, unsuccessfulStopResponse, strlen(unsuccessfulStopResponse));
+        write(newsockfd, unsuccessfulSaveResponse, strlen(unsuccessfulSaveResponse));
     } else {
         saveNodes(dataFile, SIDHead);
         fclose(dataFile);
@@ -200,17 +186,6 @@ int main(void) {
 
     close(newsockfd);
     return 0;
-}
-
-/* Utility function to print all info starting with a node */
-void printNodes(Node *start) {
-    printf("LN | MI | FM | ID | GPA |\n");
-    while (start != NULL && start->data != NULL) {
-        printf("%s | %c | %s | %lu | %f | \n", start->data->lname, start->data->initial, start->data->fname,
-               start->data->SID, start->data->GPA);
-        start = start->next;
-    }
-    printf("------------------------\n");
 }
 
 /* Saves all the nodes under the start node provided.
@@ -271,7 +246,7 @@ putRecord(Node *f, Node *l, Node *s, Node *g, const char *cmd, const char *s_gpa
 
 
     SID = getSID(s_sid);
-    GPA = atof(s_gpa);
+    GPA = (float) atof(s_gpa);
     if (SID == 0 || GPA == 0) {
         return 0;
     }
@@ -333,7 +308,7 @@ Node *deleteNode(Node *head, unsigned long SID, int *result) {
     }
 
     (*result) = 0;
-    return head; /*Nothing was there to delete...*/
+    return head;
 }
 
 void sortAll(Node *fName, Node *lName, Node *SID, Node *GPA) {
@@ -343,20 +318,6 @@ void sortAll(Node *fName, Node *lName, Node *SID, Node *GPA) {
     bubbleSortByGPA(GPA);
 }
 
-/* Inserts a new node at the FRONT. Choose to return
- rather than dealing with pointers to pointers...
- Currently not used.
- */
-Node *insertAtFront(Node *front, SREC *record) {
-    Node *newNode = createNode();
-
-    newNode->data = record;
-    newNode->next = front;
-
-    return newNode;
-}
-
-/*Swaps the data in the nodes, rather than the pointers. */
 void swapNodes(Node *alpha, Node *beta) {
     SREC *tempRecord = alpha->data;
     alpha->data = beta->data;

@@ -14,8 +14,6 @@ set(SOURCE_FILES
 include_directories(Homework 5
         C:/Users/Nahtan/Downloads/L23-OtherTopics)
 
-add_executable(Server "Homework 5/DatabaseServer.c")
-add_executable(Client "Homework 5/DatabaseClient.c")
-add_executable(Test "Test/ResponeTest.c")
-add_executable(TestServer "Test/TestServer.c")
-add_executable(TestClient "Test/TestClient.c")
+
+add_executable(TestServer "Test/DatabaseServer.c")
+add_executable(TestClient "Test/DatabaseClient.c")

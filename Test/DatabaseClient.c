@@ -10,21 +10,23 @@
 
 #define PORT_NUM 25000
 
-static const char *GetCommand = "get";
-static const char *PutCommand = "put";
-static const char *DeleteCommand = "delete";
-static const char *SaveCommand = "save";
-static const char *StudentIdTitle = "SID";
-static const char *LastNameTitle = "Lname";
-static const char *FirstNameTitle = "Fname";
-static const char *MiddleInitialTitle = "M";
-static const char *GPA_Title = "GPA";
-static const char *RecordHeaderPrintFormat = "| %-5s | %-9s | %-9s | %s | %-4s |\n";
-static const char *RecordBorderPrintFormat = "+-------+-----------+-----------+---+------+";
-static const char *RecordDataPrintFormat = "| %05lu | %-9s | %-9s | %c | %1.2f |\n";
+char *GetCommand = "get";
+char *PutCommand = "put";
+char *DeleteCommand = "delete";
+char *SaveCommand = "save";
+char *StudentIdTitle = "SID";
+char *LastNameTitle = "Lname";
+char *FirstNameTitle = "Fname";
+char *MiddleInitialTitle = "M";
+char *GPA_Title = "GPA";
+char *RecordHeaderPrintFormat = "| %-5s | %-9s | %-9s | %s | %-4s |\n";
+char *RecordBorderPrintFormat = "+-------+-----------+-----------+---+------+";
+char *RecordDataPrintFormat = "| %05lu | %-9s | %-9s | %c | %1.2f |\n";
 
 typedef struct student {
-    char lname[10], initial, fname[10];
+    char lname[10];
+    char initial;
+    char fname[10];
     unsigned long SID;
     float GPA;
 } SREC;
@@ -49,17 +51,12 @@ void printStudentRecords(SREC *studentRecords, int numberOfRecords);
 
 void handleResponse(int sockfd, Command command);
 
-void handleDeleteCommandResponse(int sockfd);
-
-void handleStopCommandResponse(int sockfd);
-
-void handlePutCommandResponse(int sockfd);
-
 void printServerResponse(int sockfd);
 
 
 int main(void) {
-    int sockfd, portno;
+    int sockfd;
+    int portno;
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
@@ -86,11 +83,8 @@ int main(void) {
     close(sockfd);
 
     return 0;
-} /* end of main */
+}
 
-/* Start issuing commands to database */
-/* input "stop" to end database session */
-/* returns void */
 void startDatabaseSession(int sockfd) {
     char commandBuffer[100];
     Command command;
@@ -105,7 +99,6 @@ void startDatabaseSession(int sockfd) {
 
         if (command == Invalid) {
             printf("Command entered not valid.\n");
-            /* printUsage(); */
             continue;
         }
 
@@ -119,11 +112,8 @@ void startDatabaseSession(int sockfd) {
     } while (command != Save);
 
     return;
-} /* end of startDatabaseSession */
+}
 
-
-/* handles response from server after issuing command */
-/* returns void */
 void handleResponse(int sockfd, Command command) {
     switch (command) {
         case Invalid:
@@ -144,12 +134,8 @@ void handleResponse(int sockfd, Command command) {
             puts("Invalid command was passed to handleResponse function.");
             exit(1);
     }
-} /* end of handleResponse */
+}
 
-/* Used to handle reponse from server after issuing
- * a put, delete, or stop command
- * return void
- */
 void printServerResponse(int sockfd) {
     char buffer[30];
     memset(buffer, '\0', 30);
@@ -158,32 +144,27 @@ void printServerResponse(int sockfd) {
     puts(buffer);
 
     return;
-} /* end of printServerResponseFunction */
+}
 
-/* Handles response from server after client issued a get command */
-/* returns void */
 void handleGetCommandResponse(int sockfd) {
     ssize_t n;
     int numberOfRecords = -1;
     SREC *studentRecords = NULL;
     int index;
 
-    /* Read number of records to be read */
     n = read(sockfd, &numberOfRecords, sizeof(int));
     if (n < 0) {
         error("ERROR writing to socket");
     }
 
-    /* If number of records read is 0 */
     if (!numberOfRecords) {
         printStudentRecords(NULL, numberOfRecords);
         return;
     }
 
-    /* Allocate array of student records */
     studentRecords = malloc(sizeof(SREC) * numberOfRecords);
 
-    /* Read in record data into struct */
+
     for (index = 0; index < numberOfRecords; index++) {
         n = read(sockfd, &studentRecords[index], sizeof(SREC));
         if (n < 0) {
@@ -192,11 +173,8 @@ void handleGetCommandResponse(int sockfd) {
     }
 
     printStudentRecords(studentRecords, numberOfRecords);
-} /* end of handleGetCommandResponse */
+}
 
-
-/* prints student records in appropriate format to stdout */
-/* returns void */
 void printStudentRecords(SREC *studentRecords, int numberOfRecords) {
     int index;
 
@@ -210,11 +188,8 @@ void printStudentRecords(SREC *studentRecords, int numberOfRecords) {
 
     puts(RecordBorderPrintFormat);
 
-} /* end of printStudentRecords */
+}
 
-
-/* return what kind of command the string command issues */
-/* returns Command */
 Command getCommand(const char *fullCommand) {
     char *token = NULL;
     char *copy = NULL;
@@ -222,15 +197,11 @@ Command getCommand(const char *fullCommand) {
     copy = malloc(strlen(fullCommand) + 1);
     strcpy(copy, fullCommand);
 
-    /* get command from fullCommand */
     token = strtok(copy, " ");
 
-    /* return type of command issued */
     if (!strcmp(token, GetCommand)) {
-        /* Check if arg passed to get is valid */
         token = strtok(NULL, " ");
 
-        /* if token NULL */
         if (!token) {
             return Invalid;
         }
@@ -244,7 +215,6 @@ Command getCommand(const char *fullCommand) {
         }
 
         free(copy);
-        copy = NULL;
 
         return Get;
     } else if (!strcmp(token, PutCommand)) {
@@ -256,10 +226,7 @@ Command getCommand(const char *fullCommand) {
     } else {
         return Invalid;
     }
-} /* end of getCommand */
-
-
-/* Note: Not sure if we need this yet. */
+}
 void removeTrailingWhitespace(char *buffer) {
     ssize_t length = strlen(buffer);
     while (length - 1 >= 0 && isspace(buffer[length - 1])) {
@@ -269,7 +236,6 @@ void removeTrailingWhitespace(char *buffer) {
 
     return;
 }
-
 
 void error(char *msg) {
     perror(msg);

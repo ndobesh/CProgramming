@@ -8,12 +8,12 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#define SERVER_COMMAND_EXECUTION_RESPONSE_LENGTH 30
+#define PORT_NUM 25000
 
 static const char *GetCommand = "get";
 static const char *PutCommand = "put";
 static const char *DeleteCommand = "delete";
-static const char *StopCommand = "stop";
+static const char *SaveCommand = "save";
 static const char *StudentIdTitle = "SID";
 static const char *LastNameTitle = "Lname";
 static const char *FirstNameTitle = "Fname";
@@ -30,7 +30,7 @@ typedef struct student {
 } SREC;
 
 enum COMMAND {
-    Invalid, Get, Put, Delete, Stop
+    Invalid, Get, Put, Delete, Save
 };
 
 typedef enum COMMAND Command;
@@ -58,19 +58,15 @@ void handlePutCommandResponse(int sockfd);
 void printServerResponse(int sockfd);
 
 
-int main(int argc, char *argv[]) {
+int main(void) {
     int sockfd, portno;
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
-    if (argc < 3) {
-        fprintf(stderr, "usage %s hostname port\n", argv[0]);
-        exit(0);
-    }
-    portno = atoi(argv[2]);
+    portno = PORT_NUM;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) { error("ERROR opening socket"); }
-    server = gethostbyname(argv[1]);
+    server = gethostbyname("localhost");
     if (server == NULL) {
         fprintf(stderr, "ERROR, no such host\n");
         exit(0);
@@ -78,8 +74,8 @@ int main(int argc, char *argv[]) {
 
     memset((char *) &serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    memcpy((char *) server->h_addr_list, (char *) &serv_addr.sin_addr.s_addr, server->h_length);
-    serv_addr.sin_port = htons(portno);
+    memcpy((char *) server->h_addr_list, (char *) &serv_addr.sin_addr.s_addr, (size_t) server->h_length);
+    serv_addr.sin_port = htons((uint16_t) portno);
 
     if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         error("ERROR connecting");
@@ -120,7 +116,7 @@ void startDatabaseSession(int sockfd) {
 
         handleResponse(sockfd, command);
 
-    } while (command != Stop);
+    } while (command != Save);
 
     return;
 } /* end of startDatabaseSession */
@@ -140,7 +136,7 @@ void handleResponse(int sockfd, Command command) {
 
         case Put:
         case Delete:
-        case Stop:
+        case Save:
             printServerResponse(sockfd);
             return;
 
@@ -255,8 +251,8 @@ Command getCommand(const char *fullCommand) {
         return Put;
     } else if (!strcmp(token, DeleteCommand)) {
         return Delete;
-    } else if (!strcmp(token, StopCommand)) {
-        return Stop;
+    } else if (!strcmp(token, SaveCommand)) {
+        return Save;
     } else {
         return Invalid;
     }

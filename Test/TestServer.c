@@ -7,9 +7,9 @@
 #include <unistd.h>
 #include <time.h>
 
-#define FILE_NAME "data"
+#define FILE_NAME "Student_Records.out"
+#define PORT_NUM 25000
 
-/* --- Structures --- */
 typedef struct student {
     char lname[10];
     char initial;
@@ -75,11 +75,11 @@ SREC *newSREC(const char *last, char init, const char *first, unsigned long SID,
 static const char *successfulPutResponse = "Record successfully added.";
 static const char *unsuccessfulPutResponse = "Error while adding record.";
 static const char *unsuccessfulStopResponse = "Error while saving database.";
-static const char *successfulStopResponse = "Database saved successfully.";
+static const char *successfulSaveResponse = "Database saved successfully.";
 static const char *successfulDeleteResponse = "Record deleted.";
 static const char *unsuccessfulDeleteResponse = "Unable to delete record.";
 
-int main(int argc, char *argv[]) {
+int main(void) {
     int sockfd, newsockfd, portno;
     socklen_t clilen;
     char buffer[256];
@@ -98,12 +98,6 @@ int main(int argc, char *argv[]) {
 
     FILE *dataFile = NULL;
 
-    /* Make sure usage was correct, a port number was provided. */
-    if (argc < 2) {
-        fprintf(stderr, "ERROR, no port provided\n");
-        exit(1);
-    }
-
     /* Create a socket and make sure socket was successfully opened */
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
@@ -111,7 +105,7 @@ int main(int argc, char *argv[]) {
     }
 
     memset((char *) &serv_addr, 0, sizeof(serv_addr));
-    portno = atoi(argv[1]);
+    portno = PORT_NUM;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons((uint16_t) portno);
@@ -119,8 +113,6 @@ int main(int argc, char *argv[]) {
         error("ERROR on binding");
     }
     listen(sockfd, 5);
-
-    printf("Waiting for client... \n");
 
     clilen = sizeof(cli_addr);
     newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
@@ -135,33 +127,16 @@ int main(int argc, char *argv[]) {
     SIDHead = createNode();
     GPAHead = createNode();
 
-    /* Load data from file */
-    dataFile = fopen(FILE_NAME, "r");
-    if (dataFile == NULL) {
-        /*Create it. */
-        dataFile = fopen(FILE_NAME, "w+");
-        if (dataFile == NULL) {
-            printf("Unable to create file! \n");
-            exit(0);
-        } else {
-            fclose(dataFile);
-        }
-    } else {
-        readRecords(dataFile, fNameHead, lNameHead, SIDHead, GPAHead, &numRecords);
-        sortAll(fNameHead, lNameHead, SIDHead, GPAHead);
-        fclose(dataFile);
-    }
     /* Main Loop */
 
-    printf("Client connected, reading... \n");
-    while (1) {
-        memset(buffer, 0, 256); /*Otherwise we end up with wonkey stuff... */
+    for (;;) {
+        memset(buffer, 0, 256);
         n = (int) read(newsockfd, buffer, 255);
-        if (n <= 0) { /*Negative */
+        if (n <= 0) {
             error("ERROR reading from socket");
         }
 
-        commandID = getCommand(strtok(buffer, " ")); /*Assuming it's sent as a space! */
+        commandID = getCommand(strtok(buffer, " "));
 
         if (commandID == 0) { /*Get command */
             n = getTypeID(strtok(NULL, " ")); /*Reuse n */
@@ -194,10 +169,6 @@ int main(int argc, char *argv[]) {
         if (commandID == 2) { /*delete*/
             tempSID = getSID(strtok(NULL, " ")); /*SID, already toked it to get CommandID*/
 
-            /* We're doing assignment since the head node might change...
-             In the future might make another field like isDeleted
-             that would save a lot of time.
-             */
             fNameHead = deleteNode(fNameHead, tempSID, &n);
             lNameHead = deleteNode(lNameHead, tempSID, &n);
             SIDHead = deleteNode(SIDHead, tempSID, &n);
@@ -212,19 +183,19 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (commandID == 3) { /*stop*/
+        if (commandID == 3) { /*save*/
             break;
         }
     }
 
     dataFile = fopen(FILE_NAME, "w");
     if (dataFile == NULL) {
-        printf("Unable to data file. Are you sure it exists? File Name: %s \n", FILE_NAME);
+        fprintf(stderr, "Unable to data file.\n");
         write(newsockfd, unsuccessfulStopResponse, strlen(unsuccessfulStopResponse));
     } else {
         saveNodes(dataFile, SIDHead);
         fclose(dataFile);
-        write(newsockfd, successfulStopResponse, strlen(successfulStopResponse));
+        write(newsockfd, successfulSaveResponse, strlen(successfulSaveResponse));
     }
 
     close(newsockfd);
@@ -274,30 +245,6 @@ void sendRecords(Node *start, int numberOfRecords, int handle) {
         write(handle, temp->data, sizeof(SREC));
         temp = temp->next;
         c++;
-    }
-}
-
-/* Reads records from the given file pointer, passed the 4 node types so we can modify them,
-        and numRec to add to. */
-void readRecords(FILE *fp, Node *first, Node *last, Node *SID, Node *GPA, int *numRec) {
-
-    SREC *tempSREC = malloc(sizeof(SREC));
-    SREC *cyclingSREC;
-
-    while (fread(tempSREC, sizeof(SREC), 1, fp) != 0) { /*Returns 0 when nothing was read */
-        /*
-         Data is an SREC pointer, so we need to make a new pointer since tempSREC's
-         pointed to value is changed. Therefore we need to copy, like you would with strcpy
-         */
-        cyclingSREC = newSREC(tempSREC->lname, tempSREC->initial, tempSREC->fname, tempSREC->SID, tempSREC->GPA);
-        add(first, cyclingSREC);
-        add(last, cyclingSREC);
-        add(SID, cyclingSREC);
-        add(GPA, cyclingSREC);
-
-        (*numRec)++;
-        free(tempSREC);
-        tempSREC = malloc(sizeof(SREC));
     }
 }
 
@@ -450,7 +397,7 @@ int getCommand(char *cmd) {
         return 2;
     }
 
-    if (strcmp(cmd, "stop") == 0) {
+    if (strcmp(cmd, "save") == 0) {
         return 3;
     }
 
